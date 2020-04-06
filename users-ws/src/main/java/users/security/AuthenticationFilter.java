@@ -2,10 +2,10 @@ package users.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,11 +25,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Objects;
-
 @RequiredArgsConstructor
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
     private final UserService userService;
     private final Environment environment;
+
 
     public AuthenticationFilter(UserService userService, Environment environment, AuthenticationManager authenticationManager) {
         this.userService = userService;
@@ -41,7 +42,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request,
                                                 HttpServletResponse response) throws AuthenticationException {
         try {
-            Gson gson = new Gson();
             LoginRequestModel creds = new ObjectMapper().readValue(request.getInputStream(), LoginRequestModel.class);
 
             return getAuthenticationManager()
@@ -67,8 +67,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(Objects.requireNonNull(environment.getProperty("token.expiration_time")))))
                 .signWith(SignatureAlgorithm.HS512, environment.getProperty("token.secret"))
                 .compact();
-        response.addHeader("token",token);
-        response.addHeader("userId",userDetailsByEmail.getUserId());
+        response.addHeader("token", token);
+        response.addHeader("userId", userDetailsByEmail.getUserId());
 
     }
 }
