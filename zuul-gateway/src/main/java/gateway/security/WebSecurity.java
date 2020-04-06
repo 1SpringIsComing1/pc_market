@@ -20,7 +20,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers(environment.getProperty("api.registration.url.path")).permitAll()
+                .antMatchers(environment.getProperty("db.url.path")).permitAll()
                 .antMatchers(HttpMethod.POST, environment.getProperty("api.registration.url.path")).permitAll()
                 .antMatchers(HttpMethod.POST, environment.getProperty("api.login.url.path")).permitAll()
                 .anyRequest().authenticated()
